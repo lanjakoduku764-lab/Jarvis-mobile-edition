@@ -1,104 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html>
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>J.A.R.V.I.S Mobile Edition</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  :root { --cyan:#00f0ff; --dim:#0a8f99; --green:#2cff2c; --red:#ff2a2a; --panel:#03100f; }
-  * { box-sizing:border-box; }
-  body { margin:0; background:#000; color:var(--cyan); font-family:'Orbitron',Arial,sans-serif;
-         min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:24px 16px 40px; }
-  h1 { margin:0; font-size:2rem; letter-spacing:.25em; text-shadow:0 0 14px var(--cyan); }
-  .sub { font-size:.7rem; letter-spacing:.4em; color:var(--dim); margin:6px 0 28px; }
-  .orb { position:relative; width:190px; height:190px; border-radius:50%; cursor:pointer; margin-bottom:22px; }
-  .ring { position:absolute; border-radius:50%; border:3px solid var(--cyan);
-          box-shadow:0 0 18px var(--cyan), inset 0 0 18px var(--cyan); }
-  .r1 { inset:0; border-right-color:transparent; animation:spin 6s linear infinite; }
-  .r2 { inset:24px; border-bottom-color:transparent; animation:spin 4s linear infinite reverse; }
-  .core { position:absolute; inset:62px; border-radius:50%; background:#079; box-shadow:0 0 20px #0aa; }
-  .orb.listening .core { background:var(--cyan); animation:pulse 1s ease-in-out infinite; }
-  @keyframes spin { to { transform:rotate(360deg); } }
-  @keyframes pulse { 50% { transform:scale(1.25); } }
-  @media (prefers-reduced-motion:reduce) { .r1,.r2,.orb.listening .core { animation:none; } }
-  #state { letter-spacing:.3em; font-size:.8rem; margin-bottom:26px; }
-  .panel { width:100%; max-width:360px; border:1px solid #0b4b50; background:var(--panel); padding:14px 16px; margin-bottom:16px; }
-  .panel h2 { margin:0 0 10px; font-size:.95rem; letter-spacing:.15em; }
-  .row { display:flex; justify-content:space-between; font-size:.8rem; padding:4px 0; }
-  .on { color:var(--green); } .off { color:var(--red); }
-  #log { min-height:150px; max-height:240px; overflow-y:auto; font-size:.75rem; line-height:1.7; color:#7ff; }
-  .me { color:#fff; }
-  form { display:flex; gap:8px; width:100%; max-width:360px; }
-  input { flex:1; background:#000; border:1px solid #0b4b50; color:var(--cyan); padding:10px; font-family:inherit; font-size:.8rem; }
-  button { background:#003f44; color:var(--cyan); border:1px solid var(--cyan); padding:10px 14px; font-family:inherit; }
-  :focus-visible { outline:2px solid var(--cyan); outline-offset:2px; }
-</style>
+
+<title>J.A.R.V.I.S</title>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
-  <h1>J.A.R.V.I.S</h1>
-  <div class="sub">MOBILE EDITION</div>
 
-  <div class="orb" id="orb" role="button" tabindex="0" aria-label="Tap to talk">
-    <div class="ring r1"></div><div class="ring r2"></div><div class="core"></div>
-  </div>
-  <div id="state">CORE ACTIVE</div>
+<header><h1>J.A.R.V.I.S</h1><p>MOBILE EDITION</p></header>
 
-  <div class="panel">
-    <h2>SYSTEM STATUS</h2>
-    <div class="row"><span>AI CORE</span><span class="on">● ONLINE</span></div>
-    <div class="row"><span>NETWORK</span><span id="net" class="on">● ONLINE</span></div>
-    <div class="row"><span>VOICE</span><span id="voice" class="off">○ LOCKED</span></div>
-    <div class="row"><span>MEMORY</span><span id="mem" class="off">○ LOCKED</span></div>
-  </div>
+<div class="core">
 
-  <div class="panel"><div id="log">Tap the orb to unlock voice. Say "open WhatsApp", "what time is it" or "open Gmail".</div></div>
+<div class="ring r1"></div>
 
-  <form id="f"><input id="t" placeholder="Type a command" autocomplete="off"><button>SEND</button></form>
+<div class="ring r2"></div>
 
-<script>
-const $ = id => document.getElementById(id);
-const log = (txt, me) => { const d = document.createElement('div'); if (me) d.className = 'me';
-  d.textContent = (me ? '> ' : '') + txt; $('log').appendChild(d); $('log').scrollTop = 1e9; };
-const say = txt => { log(txt); try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(txt)); } catch(e){} };
+<div class="center"></div>
 
-function setStatus(el, ok) { el.className = ok ? 'on' : 'off'; el.textContent = ok ? '● ONLINE' : '○ LOCKED'; }
-function netUpdate() { $('net').className = navigator.onLine ? 'on' : 'off'; $('net').textContent = navigator.onLine ? '● ONLINE' : '○ OFFLINE'; }
-addEventListener('online', netUpdate); addEventListener('offline', netUpdate); netUpdate();
+</div>
 
-// Memory (saved in this browser)
-try { const m = JSON.parse(localStorage.getItem('jarvis-mem') || '[]'); setStatus($('mem'), true); } catch(e) {}
+<p class="core-text">CORE ACTIVE</p>
 
-function handle(cmd) {
-  const c = cmd.toLowerCase();
-  log(cmd, true);
-  if (c.includes('whatsapp')) { say('Opening WhatsApp'); location.href = 'https://wa.me/'; }
-  else if (c.includes('gmail') || c.includes('mail')) { say('Opening Gmail'); location.href = 'https://mail.google.com'; }
-  else if (c.includes('youtube')) { say('Opening YouTube'); location.href = 'https://youtube.com'; }
-  else if (c.includes('time')) say('It is ' + new Date().toLocaleTimeString());
-  else if (c.includes('date') || c.includes('day')) say('Today is ' + new Date().toDateString());
-  else if (c.startsWith('search ')) { say('Searching'); location.href = 'https://www.google.com/search?q=' + encodeURIComponent(cmd.slice(7)); }
-  else if (c.startsWith('remember ')) {
-    const m = JSON.parse(localStorage.getItem('jarvis-mem') || '[]'); m.push(cmd.slice(9));
-    localStorage.setItem('jarvis-mem', JSON.stringify(m)); say('Saved.');
-  }
-  else say('Command not recognised.');
-}
+<div class="status">
 
-$('f').onsubmit = e => { e.preventDefault(); if ($('t').value.trim()) handle($('t').value.trim()); $('t').value = ''; };
+<h2>SYSTEM STATUS</h2>
 
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-function listen() {
-  if (!SR) { say('Voice is not supported in this browser. Use Chrome.'); return; }
-  const r = new SR(); r.lang = 'en-IN';
-  r.onstart = () => { $('orb').classList.add('listening'); $('state').textContent = 'LISTENING'; setStatus($('voice'), true); };
-  r.onend = () => { $('orb').classList.remove('listening'); $('state').textContent = 'CORE ACTIVE'; };
-  r.onerror = ev => { setStatus($('voice'), false); say('Mic error: ' + ev.error + '. Allow microphone access.'); };
-  r.onresult = ev => handle(ev.results[0][0].transcript);
-  r.start();
-}
-$('orb').onclick = listen;
-$('orb').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') listen(); };
-</script>
+<div class="row"><span>AI CORE</span><b class="on"> ONLINE</b></div>
+
+<div class="row"><span>NETWORK</span><b class="on"> ONLINE</b></div>
+
+<div class="row"><span>VOICE</span><b class="off"> LOCKED</b></div>
+
+<div class="row"><span>MEMORY</span><b class="off"> LOCKED</b></div>
+
+</div>
+
+<div class="chat" id="chat"></div>
+
+<div class="input-area">
+
+<input id="msg" placeholder="Ask J.A.R.V.I.S...">
+
+<button id="send">SEND</button><button id="mic-btn"></button>
+
+</div>
+
+<script src="script.js"></script>
+
 </body>
+
 </html>
